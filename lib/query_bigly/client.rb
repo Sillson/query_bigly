@@ -45,6 +45,9 @@ module QueryBigly
       end
     end
 
+    def create_table(table_hash, table_date=nil)
+    end
+
     def create_table_from_query(statement, destination_table_name)
       delete_table(destination_table_name)
       destination_table = @dataset.create_table destination_table_name
@@ -55,6 +58,11 @@ module QueryBigly
       else
         job.data
       end
+    end
+
+    def create_partitioned_table_if_not_exists(table_hash, table_date)
+      table = @dataset.table "#{table_hash[:name]}_#{table_date}"
+      table.nil? ? create_new_table(table_hash, table_date) : table
     end
 
     def set_table_date(date)
