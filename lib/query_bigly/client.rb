@@ -14,8 +14,8 @@ module QueryBigly
       @dataset = @bigquery.dataset dataset
     end
 
-    def stream_record_to_bigquery(klass, record, custom_fields, table_date=nil)
-      table = create_partitioned_table_if_not_exists(klass, custom_fields, table_date)
+    def stream_model_to_bigquery(klass, record, custom_fields, table_date=nil)
+      table = create_table_if_not_exists(klass, custom_fields, table_date)
       stream_to_bigquery(table.table_id, record)
     end
 
@@ -52,34 +52,25 @@ module QueryBigly
       inserter.stop.wait!
     end
 
-    def delete_table(table_name)
-      table = @dataset.table table_name
-      begin
-        table.delete
-      rescue NoMethodError => e
-        "#{table_name} does not exists..."
+    def create_table(klass, custom_fields={}, table_date=nil)
+      custom_fields.empty? ? schema = build_table_hash(klass) : schema = custom_fields
+      table = @dataset.create_table "#{table_name}" do |table|
+        format_schema_for_creation(schema).each do |type_name|
+          eval(type_name[0]) "#{type_name[1]}"
+        end
       end
     end
 
-    def create_table(klass, custom_fields={}, table_date=nil)
-      if table_date
-        table_name = klass.table_name + "_" + table_date
-      else
-        table_name = klass.table_name
-      end
+    def create_table_if_not_exists(klass, custom_fields, table_date=nil)
+      table = @dataset.table set_table_name(klass, table_date)
+      table.nil? ? create_table(klass, custom_fields, table_name) : table
+    end
 
-      if custom_fields.empty?
-        table = @dataset.create_table "#{table_name}" do |table|
-          build_table_hash(klass).map {|k,v| ["table.schema.#{v}","#{k}"]}.each do |type_name|
-            eval(type_name[0]) "#{type_name[1]}"
-          end
-        end
+    def set_table_name(klass, table_date=nil)
+      if table_date
+        table_name = klass.table_name
       else
-        table = @dataset.create_table "#{table_name}" do |table|
-          custom_fields.map {|k,v| ["table.schema.#{v}","#{k}"]}.each do |type_name|
-            eval(type_name[0]) "#{type_name[1]}"
-          end
-        end
+        table_name = klass.table_name + '_' + table_date
       end
     end
 
@@ -95,9 +86,13 @@ module QueryBigly
       end
     end
 
-    def create_partitioned_table_if_not_exists(klass, custom_fields, table_date)
-      table = @dataset.table "#{klass.table_name}_#{table_date}"
-      table.nil? ? create_new_table(table_hash, custom_fields, table_date) : table
+    def delete_table(table_name)
+      table = @dataset.table table_name
+      begin
+        table.delete
+      rescue NoMethodError => e
+        "#{table_name} does not exists..."
+      end
     end
   end
 end

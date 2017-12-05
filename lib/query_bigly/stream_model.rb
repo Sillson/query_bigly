@@ -17,13 +17,12 @@ module QueryBigly
       # set the table date
       table_date = set_table_date(record[partition_by])
       # push to QueryBigly::Client to insert to the appropriate table
-      QueryBigly::Client.new.stream_record_to_bigquery(klass, record, custom_fields, table_date)
+      QueryBigly::Client.new.stream_model_to_bigquery(klass, record, custom_fields, table_date)
     end
 
-    def self.find_model_attributes(klass)
+    def self.set_model_attributes(klass)
       @table_name    = klass.table_name
       @column_schema = klass.columns_hash.map { |column_name,column| [column_name, column.type] }.to_h
-      format_record
     end
 
     def self.format_record(klass, pk, custom_fields)
