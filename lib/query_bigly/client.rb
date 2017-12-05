@@ -31,15 +31,18 @@ module QueryBigly
       end
     end
 
+    ####################################################
+    ## REQUIRES google-cloud-bigquery ~> 0.29 or greater
+    ####################################################
     # Insert an array of json rows to a BigQuery table
-    def insert_async(table, data)
-      inserter = table.insert_async do |response|
-        log_insert "inserted #{response.insert_count} rows" \
-          "with #{response.error_count} errors"
-      end
-      inserter.insert data
-      inserter.stop.wait!
-    end
+    # def insert_async(table, data)
+    #   inserter = table.insert_async do |response|
+    #     log_insert "inserted #{response.insert_count} rows" \
+    #       "with #{response.error_count} errors"
+    #   end
+    #   inserter.insert data
+    #   inserter.stop.wait!
+    # end
 
     # Streams an ActiveRecord model record to BigQuery
     def stream_model(klass, record, custom_fields={}, table_date=nil)

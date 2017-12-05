@@ -6,8 +6,6 @@
 /pkg/
 /spec/reports/
 /tmp/
-.env
-.env.*
 keys/*
 
 # rspec failure tracking

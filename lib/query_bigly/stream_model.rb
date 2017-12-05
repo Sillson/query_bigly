@@ -4,7 +4,9 @@ module QueryBigly
 
     def self.stream_model(klass, pk, custom_fields={}, partition_by=nil)
       # allow the user to overwrite the partition field...maybe add logic later to check if it's valid
+      # if the model is being streamed, we will want to partition it
       partition_by = 'created_at' || partition_by
+
       # format the record, use custom fields if desired...
       # example of custom_fields format:
       # { "id_client"=>:integer,
@@ -14,8 +16,10 @@ module QueryBigly
       #   "budget_urn"=>:string,
       #   "created_at"=>:datetime }
       record     = format_record(klass, pk, custom_fields.keys)
+
       # set the table date
       table_date = set_table_date(record[partition_by])
+      
       # push to QueryBigly::Client to insert to the appropriate table
       QueryBigly::Client.new.stream_model(klass, record, custom_fields, table_date)
     end

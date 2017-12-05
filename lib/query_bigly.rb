@@ -5,6 +5,7 @@ require "query_bigly/version"
 require "query_bigly/table_helpers"
 require "query_bigly/client"
 require "query_bigly/stream_model"
+require "query_bigly/bulk_insert_model"
 
 module QueryBigly
   PROJECT_ID      = ENV.fetch('PROJECT_ID', 'Needs to be set').freeze
