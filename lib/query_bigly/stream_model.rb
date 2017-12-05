@@ -1,8 +1,8 @@
 module QueryBigly
   module StreamModel
-    extend QueryBigly::Helpers
+    extend QueryBigly::TableHelpers
 
-    def self.stream_model_to_bigquery(klass, pk, custom_fields={}, partition_by=nil)
+    def self.stream_model(klass, pk, custom_fields={}, partition_by=nil)
       # allow the user to overwrite the partition field...maybe add logic later to check if it's valid
       partition_by = 'created_at' || partition_by
       # format the record, use custom fields if desired...
@@ -17,7 +17,7 @@ module QueryBigly
       # set the table date
       table_date = set_table_date(record[partition_by])
       # push to QueryBigly::Client to insert to the appropriate table
-      QueryBigly::Client.new.stream_model_to_bigquery(klass, record, custom_fields, table_date)
+      QueryBigly::Client.new.stream_model(klass, record, custom_fields, table_date)
     end
 
     def self.set_model_attributes(klass)
