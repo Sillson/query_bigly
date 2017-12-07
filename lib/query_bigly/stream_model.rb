@@ -12,9 +12,9 @@ module QueryBigly
       # { "id_client"=>:integer,
       #   "client_urn"=>:string,
       #   "id_budget"=>:integer,
-      #   "name_budget"=>:string,
-      #   "budget_urn"=>:string,
-      #   "created_at AS source_created_at"=>:datetime }
+      #   "name_budget AS alias_name_here"=>:string,
+      #   "budget_urn AS alias_name here"=>:string,
+      #   "created_at"=>:datetime }
       record = format_record(klass, pk, custom_fields.keys)
 
       # set the table date

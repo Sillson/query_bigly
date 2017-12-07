@@ -1,5 +1,13 @@
 require "bundler/setup"
 require "query_bigly"
+require "date"
+require 'active_record'
+require "dotenv/load"
+
+ActiveRecord::Base.establish_connection adapter: "sqlite3", database: ":memory:"
+
+load File.dirname(__FILE__) + '/schema.rb'
+require File.dirname(__FILE__) + '/models.rb'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
