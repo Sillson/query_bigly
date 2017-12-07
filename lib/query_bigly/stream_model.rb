@@ -14,12 +14,15 @@ module QueryBigly
       #   "id_budget"=>:integer,
       #   "name_budget"=>:string,
       #   "budget_urn"=>:string,
-      #   "created_at"=>:datetime }
-      record     = format_record(klass, pk, custom_fields.keys)
+      #   "created_at AS source_created_at"=>:datetime }
+      record = format_record(klass, pk, custom_fields.keys)
 
       # set the table date
       table_date = set_table_date(record[partition_by])
       
+      # if custom_fields exist, persist only the alias
+      custom_fields = use_any_aliases(custom_fields) if !custom_fields.empty?
+
       # push to QueryBigly::Client to insert to the appropriate table
       QueryBigly::Client.new.stream_model(klass, record, custom_fields, table_date)
     end
@@ -35,7 +38,11 @@ module QueryBigly
       custom_fields = custom_fields.join(', ')
 
       # record will need to have a primary key!
-      record = klass.select(attributes).where("#{klass.primary_key} = ?", pk).as_json.first
+      record = klass.select(custom_fields).where("#{klass.primary_key} = ?", pk).as_json.first
+    end
+
+    def self.use_any_aliases(custom_fields)
+      custom_fields.map {|k,v| [k.gsub(/.*AS\s+/, ''), v]}.to_h
     end
 
     def self.partioniable?(partition_field)

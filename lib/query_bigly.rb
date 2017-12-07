@@ -1,6 +1,4 @@
-require 'dotenv/load'
 require "google/cloud/bigquery"
-
 require "query_bigly/version"
 require "query_bigly/table_helpers"
 require "query_bigly/client"
