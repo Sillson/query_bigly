@@ -39,6 +39,9 @@ module QueryBigly
 
       # record will need to have a primary key!
       record = klass.select(custom_fields).where("#{klass.primary_key} = ?", pk).as_json.first
+
+      # JSON data types not currently supported
+      record = stringify_json_attributes(record)
     end
 
     def self.use_any_aliases(custom_fields)
