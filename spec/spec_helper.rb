@@ -1,6 +1,7 @@
 require "bundler/setup"
 require "query_bigly"
 require "date"
+require "pry"
 require 'active_record'
 require "dotenv/load"
 

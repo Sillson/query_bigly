@@ -1,6 +1,6 @@
 module QueryBigly
   module StreamModel
-    extend QueryBigly::TableHelpers
+    extend QueryBigly::FormatHelpers
 
     def self.stream_model(klass, pk, custom_fields={}, partition_by=nil)
       # allow the user to overwrite the partition field...maybe add logic later to check if it's valid
@@ -17,8 +17,8 @@ module QueryBigly
       #   "created_at"=>:datetime }
       record = format_record(klass, pk, custom_fields.keys)
 
-      # set the table date
-      table_date = set_table_date(record[partition_by])
+      # format the table date
+      table_date = format_table_date(record[partition_by])
       
       # if custom_fields exist, persist only the alias
       custom_fields = use_any_aliases(custom_fields) if !custom_fields.empty?
@@ -42,10 +42,6 @@ module QueryBigly
 
       # JSON data types not currently supported
       record = stringify_json_attributes(record)
-    end
-
-    def self.use_any_aliases(custom_fields)
-      custom_fields.map {|k,v| [k.gsub(/.*AS\s+/, ''), v]}.to_h
     end
 
     def self.partioniable?(partition_field)

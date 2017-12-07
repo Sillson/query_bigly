@@ -1,6 +1,6 @@
 module QueryBigly
   class Client
-    include QueryBigly::TableHelpers
+    include QueryBigly::FormatHelpers
     attr_accessor :bigquery, :dataset
 
     def initialize(project_id=nil, keyfile=nil, dataset=nil)
@@ -65,7 +65,7 @@ module QueryBigly
 
     # Creates a BigQuery table if one does not exists for an ActiveRecord model record
     def create_table_if_not_exists(klass, custom_fields={}, table_date=nil)
-      table_name = set_table_name(klass, table_date)
+      table_name = format_table_name(klass, table_date)
       table = @dataset.table table_name
       table.nil? ? create_table(table_name, klass, custom_fields) : table
     end
@@ -87,7 +87,7 @@ module QueryBigly
       elsif klass.nil? && custom_fields.empty?
         raise "No schema can be generated"
       else
-         schema_array = build_model_schema(klass)
+         schema_array = format_model_schema(klass)
       end
     end
 

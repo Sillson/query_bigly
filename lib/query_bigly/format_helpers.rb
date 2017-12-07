@@ -1,8 +1,10 @@
 module QueryBigly  
-  module TableHelpers
+  module FormatHelpers
 
+    ## Table Helpers
+    
     # Sets the name of a table / logic if needs to be partioned for ActiveRecord models
-    def set_table_name(klass, table_date=nil)
+    def format_table_name(klass, table_date=nil)
       if table_date
         table_name = klass.table_name + '_' + table_date
       else
@@ -11,17 +13,19 @@ module QueryBigly
     end
 
     # BigQuery's Table Date suffix structure
-    def set_table_date(date)
+    def format_table_date(date)
       date.strftime('%Y%m%d')
     end
 
     # BigQuery's Table Date Range suffix structure
-    def set_table_date_range(date)
+    def format_table_date_range(date)
       date.strftime('%Y%m*')
     end
 
+    ## Schema Helpers
+
     # Builds a model schema and then formats it for QueryBigly::Client
-    def build_model_schema(klass)
+    def format_model_schema(klass)
       hsh = klass.columns_hash.map { |column_name,column| [column_name, column.type] }.to_h
       format_schema_helper(hsh)
     end
@@ -29,6 +33,13 @@ module QueryBigly
     # formats the schema for QueryBigly::Client
     def format_schema_helper(hsh)
       hsh.map { |k,v| ["#{v}".to_sym,"#{k}"] }
+    end
+
+    ## Custom Field Helpers
+
+    # Persist only the aliases in the custom fields after the record has been instansiated
+    def use_any_aliases(custom_fields)
+      custom_fields.map {|k,v| [k.gsub(/.*AS\s+/, ''), v]}.to_h
     end
 
     # Rails datatypes != BigQuery datatypes
