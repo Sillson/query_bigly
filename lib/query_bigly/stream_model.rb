@@ -15,7 +15,7 @@ module QueryBigly
     def self.stream_model(klass, pk, custom_fields={}, partition_by=nil)
       # allow the user to overwrite the partition field...maybe add logic later to check if it's valid
       # if the model is being streamed, we will want to partition it
-      partition_by = 'created_at' || partition_by
+      partition_by = 'created_at' if partition_by.nil?
 
       # Add a created_at to partition by if it's not included in the custom fields (and they're present)
       unless custom_fields.empty?
@@ -27,10 +27,10 @@ module QueryBigly
 
       # format the table date
       table_date = format_table_date(record[partition_by])
-      
-      # if custom_fields exist, persist only the alias
-      custom_fields = use_any_aliases(custom_fields) if !custom_fields.empty?
 
+      # If custom_fields, persist aliases as reformat strings to symbols from sidekiq
+      custom_fields = format_custom_fields(custom_fields) if !custom_fields.empty?
+      
       # push to QueryBigly::Client to insert to the appropriate table
       QueryBigly::Client.new.stream_model(klass, record, custom_fields, table_date)
     end

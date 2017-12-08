@@ -46,6 +46,7 @@ module QueryBigly
 
     # Streams an ActiveRecord model record to BigQuery
     def stream_model(klass, record, custom_fields={}, table_date=nil)
+      binding.pry
       table = create_table_if_not_exists(klass, custom_fields, table_date)
       stream_record_to_bigquery(table.table_id, record)
     end
