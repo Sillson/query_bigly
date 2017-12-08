@@ -40,17 +40,17 @@ module QueryBigly
 
     def format_custom_fields(custom_fields)
       custom_fields = use_any_aliases(custom_fields)
-      custom_fields = reformat_custom_field_types_to_sym(custom_fields)
+      reformat_custom_field_types_to_sym(custom_fields)
     end
 
     # Persist only the aliases in the custom fields after the record has been instansiated
     def use_any_aliases(custom_fields)
-      custom_fields.map {|column_name,column_type| [column_name.gsub(/.*AS\s+/, ''), column_type]}.to_h
+      custom_fields.map { |column_name,column_type| [column_name.gsub(/.*AS\s+/, ''), column_type] }.to_h
     end
 
     # Sidekiq turns the symbol values into strings, undo that
     def reformat_custom_field_types_to_sym(custom_fields)
-      custom_fields.each_with_object({}) { |(column_name, column_type), hash| hash[column_name] = column_type.to_sym}
+      custom_fields.transform_values { |column_type| column_type.to_sym }
     end
 
     # Rails datatypes != BigQuery datatypes
