@@ -33,12 +33,37 @@ RSpec.describe QueryBigly::Client do
   end
 
   describe "run queries" do
-    # before do
-    #   allow(google_cloud_bigquery).to receive(:query).and_return(true)
-    # end
+    let(:statement) { 'SELECT * FROM dogs_20170330;' }
+    let(:job) { double }
+    let(:run_query) { subject.new.run_query(statement) }
+    let(:run_async_query) { subject.new.run_async_query(statement) }
 
-    # it 'should run a query' do
-    #   expect(google_cloud_bigquery.query).to eq(true)
-    # end
+    before do
+      allow(google_cloud_bigquery).to receive(:query).and_return(true)
+      allow(google_cloud_bigquery).to receive(:query_job).and_return(job)
+      allow(job).to receive(:wait_until_done!).and_return(true)
+      allow(job).to receive(:failed?).and_return(true)
+    end
+
+    it 'should run a query' do
+      expect(run_query).to be true
+    end
+
+    context 'run_async job fails' do
+      it 'should run an asynchronous query' do
+        expect(run_async_query).to eq("Asynchronous query has failed!")
+      end
+    end
+
+    context 'run async job succeeds' do
+      before do
+        allow(job).to receive(:failed?).and_return(false)
+        allow(job).to receive(:data).and_return(true)
+      end
+
+      it 'should run an asynchronous query' do
+        expect(run_async_query).to be true
+      end
+    end
   end
 end
