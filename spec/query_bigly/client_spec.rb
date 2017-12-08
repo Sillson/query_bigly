@@ -66,4 +66,12 @@ RSpec.describe QueryBigly::Client do
       end
     end
   end
+
+  describe 'streaming' do
+    #TODO
+  end
+
+  describe 'table actions' do
+    #TODO
+  end
 end
