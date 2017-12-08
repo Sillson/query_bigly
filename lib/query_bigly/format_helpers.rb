@@ -61,12 +61,10 @@ module QueryBigly
     # TODO: Possible find a way to keep an updatable 'constants' of this list 
     # and make this logic smarter
     def map_value(value)
-      if value == :datetime 
-        :timestamp
-      elsif value == :json
-        :string
-      else
-        value
+      case value
+      when :datetime then :timestamp
+      when :json then :string
+      else value
       end
     end
 
