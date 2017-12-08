@@ -1,8 +1,6 @@
 # QueryBigly
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/query_bigly`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+A quick and dirty G5-Rails <> BigQuery integration. This gem is in beta -- and is also my first foray into gem building.
 
 ## Installation
 
@@ -22,7 +20,105 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Do These Things First
+
+- Copy the environment variables out of `.env`, and include them in your application. Change all values as pertains to your project
+- **THIS IS IMPORTANT**: create a dataset in your BigQuery project, and set `DEFAULT_DATASET` to that value. Make sure it's unique to your project, and don't overwrite or corrupt other datasets
+
+### Basic BigQuery actions
+
+The `QueryBigly::Client` class is an abstracted way to consistently interface with the `Google::Cloud::Bigquery` class from the `google-cloud-bigquery` gem.
+
+#### Querying
+
+Run a Query
+```
+statement = SELECT * FROM dogs;
+QueryBigly::Client.new.run_query(statement)
+```
+
+Run an Asynchronous Query
+```
+statement = SELECT * FROM dogs;
+QueryBigly::Client.new.run_query(statement)
+```
+*PROTIP* - make sure to `squish` your statements to remove whitespace. 
+
+#### Insertion
+**TODO**
+
+Until we can get `google-cloud-bigquery` to a minimum of `0.29.0`, the `insert_async` methods won't work.
+
+#### Streaming
+Stream a Record
+```
+table_id = 'your_cool_table'
+row_data = {'column_name'=>'your_cool_data', 'column_name_2'=>123}
+
+QueryBigly::Client.new.stream_record_to_bigquery(table_id, row_data)
+```
+
+#### Table Creation
+
+### Stream an ActiveRecord::Model
+
+As it stands, this will be the starting point for streaming our models to BigQuery -- more to come on this. Create a job via sidekiq/resque that follow this pattern:
+
+```
+class PushRecordToBigQueryWorker
+  include Sidekiq::Worker
+
+  def perform(klass, pk, custom_fields={}, partition_by=nil)
+    QueryBigly::StreamModel.stream_model(klass, pk, custom_fields, partition_by)
+  end
+end
+```
+
+I elected to _not_ include this job in the gem because of the various configurations of jobs that we have across our applications. It's up to you to build this piece of logic.
+
+1. In your model, create an after_commit callback to push_your_model_to_bigquery
+2. In that callback, instantiate the `PushRecordToBigQueryWorker` with the appropriate arguements
+
+**Custom Fields:**
+Some records are going to require custom fields, whether your purpose is to flatten a JSON column (JSON data types are NOT supported in BigQuery) or to leave out erroneous information. The custom_fields pattern will look something like the following:
+
+```
+# example from Interaction in CXM
+def custom_fields
+    {
+      "id"=>:integer,
+      "occurred_at"=>:datetime,
+      "created_at"=>:datetime,
+      "updated_at"=>:datetime,
+      "person_location_id"=>:integer,
+      "payload"=>:json,
+      "lead_uid"=>:string,
+      "source"=>:string,
+      "marketing_source_urn"=>:string,
+      "location_urn"=>:string,
+      "client_urn"=>:string,
+      "payload_type"=>:string,
+      "full_name"=>:string,
+      "location_name"=>:string,
+      "payload->'type' AS nested_payload_type"=>:string,
+      "payload->'ga_client_id' AS ga_client_id"=>:string,
+      "payload->'system' AS user_system"=>:string,
+      "payload->'category' AS category"=>:string,
+      "payload->'normalized'->'customer'->'first_name' AS first_name"=>:string,
+      "payload->'normalized'->'customer'->'last_name' AS last_name"=>:string,
+      "payload->'normalized'->'customer'->'name' AS name"=>:string,
+      "payload->'normalized'->'customer'->'telephone' AS telephone"=>:string,
+      "payload->'normalized'->'customer'->'email' AS email"=>:string,
+      "payload->'normalized'->'customer'->'existing_customer' AS existing_customer"=>:string,
+      "payload->'normalized'->'customer'->'lead_type' AS lead_type"=>:string,
+      "payload->'normalized'->'call'->'called_number' AS dialed_number"=>:string,
+      "payload->'normalized'->'call'->'duration' AS call_duration"=>:string,
+      "payload->'normalized'->'call'->'mp3_url' AS mp3_url"=>:string
+    }
+  end
+```
+**Partition By:**
+Since asynchronous inserts are not supported in this version, partitioning our tables by a datetime column is mandatory. The default is `created_at`, but you can overwrite that with any given datetime/timestamp/date column. 
 
 ## Development
 
@@ -32,7 +128,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/query_bigly. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/g5search/query_bigly. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
@@ -40,4 +136,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the QueryBigly project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/query_bigly/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the QueryBigly project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/g5search/query_bigly/blob/master/CODE_OF_CONDUCT.md).
