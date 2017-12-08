@@ -32,6 +32,7 @@ module QueryBigly
 
     # formats the schema for QueryBigly::Client
     def format_schema_helper(hsh)
+      hsh = map_data_types(hsh)
       hsh.map { |k,v| ["#{v}".to_sym,"#{k}"] }
     end
 

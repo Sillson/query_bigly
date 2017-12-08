@@ -47,14 +47,12 @@ module QueryBigly
     # Streams an ActiveRecord model record to BigQuery
     def stream_model(klass, record, custom_fields={}, table_date=nil)
       table = create_table_if_not_exists(klass, custom_fields, table_date)
-      binding.pry
       stream_record_to_bigquery(table.table_id, record)
     end
 
     # Streams a single record to BigQuery
     def stream_record_to_bigquery(table_id, row_data)
       table    = @dataset.table table_id
-      binding.pry
       response = table.insert row_data
       if response.success?
         puts "Inserted rows successfully"

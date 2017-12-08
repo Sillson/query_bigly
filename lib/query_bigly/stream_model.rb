@@ -27,29 +27,16 @@ module QueryBigly
       QueryBigly::Client.new.stream_model(klass, record, custom_fields, table_date)
     end
 
-    def self.set_model_attributes(klass)
-      @table_name    = klass.table_name
-      @column_schema = klass.columns_hash.map { |column_name,column| [column_name, column.type] }.to_h
-    end
-
-    def self.format_record(klass, pk, custom_fields)
+    def self.format_record(klass, pk, custom_field_keys)
      # allow user to pass in custom fields (unnest json/alias columns)
-      custom_fields = klass.column_names if custom_fields.empty?
-      custom_fields = custom_fields.join(', ')
+      custom_field_keys = klass.column_names if custom_field_keys.empty?
+      query_fields = custom_field_keys.join(', ')
 
       # record will need to have a primary key!
-      record = klass.select(custom_fields).where("#{klass.primary_key} = ?", pk).as_json.first
+      record = klass.select(query_fields).where("#{klass.primary_key} = ?", pk).as_json.first
 
       # JSON data types not currently supported
       record = stringify_json_attributes(record)
-    end
-
-    def self.partioniable?(partition_field)
-      if partition_field == :date || :datetime || :timestamp
-        partition_field
-      else
-        nil
-      end
     end
   end
 end
