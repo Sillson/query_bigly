@@ -31,4 +31,14 @@ RSpec.describe QueryBigly::Client do
       expect(new_client_with_overrides.instance_variable_get(:@project_id)).to eq(override_project_id)
     end
   end
+
+  describe "run queries" do
+    # before do
+    #   allow(google_cloud_bigquery).to receive(:query).and_return(true)
+    # end
+
+    # it 'should run a query' do
+    #   expect(google_cloud_bigquery.query).to eq(true)
+    # end
+  end
 end
