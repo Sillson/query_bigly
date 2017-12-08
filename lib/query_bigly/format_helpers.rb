@@ -66,6 +66,7 @@ module QueryBigly
       record.each_with_object({}) { |(key, value), hash| hash[key] = json_values_to_string(value) }
     end
 
+    # Stringify a value with a class of Hash 
     def json_values_to_string(value)
       value.class == Hash ? value.to_s : value
     end

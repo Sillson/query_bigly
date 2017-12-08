@@ -17,6 +17,14 @@ RSpec.configure do |config|
   # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!
 
+  # stub any of these
+  config.before(:each) do
+    # let(:google_cloud_bigquery) { double }
+    # allow(Google::Cloud::Bigquery).to receive(:new).and_return( google_cloud_bigquery )
+    # allow(google_cloud_bigquery).to receive(:dataset).and_return( 'foo' )
+  end
+
+  # Keep that database clean
   config.around(:each) do |example|
     ActiveRecord::Base.transaction do
       example.run

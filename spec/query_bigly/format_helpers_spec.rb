@@ -100,4 +100,13 @@ RSpec.describe QueryBigly::FormatHelpers do
       expect(datetime_field_has_changed[0]).to eq(:timestamp)
     end
   end
+
+  describe 'stringify_json_attributes' do
+    let(:test_json_hash) { {'json_field'=>{'nested_json'=>'true'} }}
+    let(:subject) { extended_class.stringify_json_attributes(test_json_hash) }
+    
+    it 'will convert the json value to a string' do
+      expect(subject.values.first.class).to eq(String)
+    end
+  end
 end
