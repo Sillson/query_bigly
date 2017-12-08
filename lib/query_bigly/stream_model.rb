@@ -2,19 +2,27 @@ module QueryBigly
   module StreamModel
     extend QueryBigly::FormatHelpers
 
+    # example of custom_fields format:
+    # { 
+    #   "id_client"=>:integer,
+    #   "client_urn"=>:string,
+    #   "id_budget"=>:integer,
+    #   "name_budget AS alias_name_here"=>:string,
+    #   "budget_urn AS alias_name_here"=>:string,
+    #   "created_at"=>:datetime 
+    # }
+
     def self.stream_model(klass, pk, custom_fields={}, partition_by=nil)
       # allow the user to overwrite the partition field...maybe add logic later to check if it's valid
       # if the model is being streamed, we will want to partition it
       partition_by = 'created_at' || partition_by
 
+      # Add a created_at to partition by if it's not included in the custom fields (and they're present)
+      unless custom_fields.empty?
+        custom_fields['created_at'] = :timestamp if !custom_fields.include?(partition_by)
+      end
+
       # format the record, use custom fields if desired...
-      # example of custom_fields format:
-      # { "id_client"=>:integer,
-      #   "client_urn"=>:string,
-      #   "id_budget"=>:integer,
-      #   "name_budget AS alias_name_here"=>:string,
-      #   "budget_urn AS alias_name here"=>:string,
-      #   "created_at"=>:datetime }
       record = format_record(klass, pk, custom_fields.keys)
 
       # format the table date
