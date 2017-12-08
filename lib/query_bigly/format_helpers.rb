@@ -33,7 +33,7 @@ module QueryBigly
     # formats the schema for QueryBigly::Client
     def format_schema_helper(hsh)
       hsh = map_data_types(hsh)
-      hsh.map { |k,v| ["#{v}".to_sym,"#{k}"] }
+      hsh.map { |column_name,column_type| ["#{column_type}".to_sym,"#{column_name}"] }
     end
 
     ## Custom Field Helpers
@@ -45,26 +45,26 @@ module QueryBigly
 
     # Persist only the aliases in the custom fields after the record has been instansiated
     def use_any_aliases(custom_fields)
-      custom_fields.map {|k,v| [k.gsub(/.*AS\s+/, ''), v]}.to_h
+      custom_fields.map {|column_name,column_type| [column_name.gsub(/.*AS\s+/, ''), column_type]}.to_h
     end
 
     # Sidekiq turns the symbol values into strings, undo that
     def reformat_custom_field_types_to_sym(custom_fields)
-      custom_fields.each_with_object({}) { |(key, value), hash| hash[key] = value.to_sym}
+      custom_fields.each_with_object({}) { |(column_name, column_type), hash| hash[column_name] = column_type.to_sym}
     end
 
     # Rails datatypes != BigQuery datatypes
     def map_data_types(hsh)
-      hsh.each_with_object({}) { |(key, value), hash| hash[key] = map_value(value) }
+      hsh.each_with_object({}) { |(column_name, column_type), hash| hash[column_name] = map_value(column_type) }
     end
 
     # TODO: Possible find a way to keep an updatable 'constants' of this list 
     # and make this logic smarter
-    def map_value(value)
-      case value
+    def map_value(column_type)
+      case column_type
       when :datetime then :timestamp
       when :json then :string
-      else value
+      else column_type
       end
     end
 
