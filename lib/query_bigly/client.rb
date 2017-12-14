@@ -3,7 +3,7 @@ module QueryBigly
     include QueryBigly::FormatHelpers
     attr_accessor :bigquery, :dataset
 
-    def initialize(project_id=nil, keyfile=nil, dataset=nil)
+    def initialize(dataset=nil, project_id=nil, keyfile=nil)
       @project_id = project_id || QueryBigly.project_id
       @keyfile = keyfile || QueryBigly.keyfile
       dataset = dataset || QueryBigly.default_dataset
@@ -31,18 +31,24 @@ module QueryBigly
       end
     end
 
-    ####################################################
-    ## REQUIRES google-cloud-bigquery ~> 0.29 or greater
-    ####################################################
+    # Bulk Inserts and ActiveRecord model (all) to BigQuery
+    def bulk_insert_model(klass, data, table_name=nil, custom_fields={})
+      table_name = table_name || format_table_name(klass)
+      @dataset.delete_table(table_name)
+      create_table(table_name, klass, custom_fields)
+      table = @dataset.table table_name
+      insert_async(table, data)
+    end
+
     # Insert an array of json rows to a BigQuery table
-    # def insert_async(table, data)
-    #   inserter = table.insert_async do |response|
-    #     log_insert "inserted #{response.insert_count} rows" \
-    #       "with #{response.error_count} errors"
-    #   end
-    #   inserter.insert data
-    #   inserter.stop.wait!
-    # end
+    def insert_async(table, data)
+      inserter = table.insert_async do |response|
+        log_insert "inserted #{response.insert_count} rows" \
+          "with #{response.error_count} errors"
+      end
+      inserter.insert data
+      inserter.stop.wait!
+    end
 
     # Streams an ActiveRecord model record to BigQuery
     def stream_model(klass, record, custom_fields={}, table_date=nil)
