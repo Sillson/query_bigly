@@ -12,7 +12,7 @@ module QueryBigly
     #   "created_at"=>:datetime 
     # }
 
-    def self.bulk_insert_model(klass, dataset, remote_table_name=nil, custom_fields={})
+    def self.bulk_insert_model(klass, dataset=nil, remote_table_name=nil, custom_fields={})
       data = format_record(klass, custom_fields.keys)
       custom_fields = format_custom_fields(custom_fields) if !custom_fields.empty?
       QueryBigly::Client.new(dataset).bulk_insert_model(klass, data, remote_table_name, custom_fields)

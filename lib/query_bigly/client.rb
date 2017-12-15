@@ -34,7 +34,7 @@ module QueryBigly
     # Bulk Inserts and ActiveRecord model (all) to BigQuery
     def bulk_insert_model(klass, data, table_name=nil, custom_fields={})
       table_name = table_name || format_table_name(klass)
-      @dataset.delete_table(table_name)
+      delete_table(table_name)
       create_table(table_name, klass, custom_fields)
       table = @dataset.table table_name
       insert_async(table, data)
