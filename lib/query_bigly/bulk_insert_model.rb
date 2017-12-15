@@ -13,19 +13,19 @@ module QueryBigly
     # }
 
     def self.bulk_insert_model(klass, dataset=nil, remote_table_name=nil, custom_fields={})
-      data = format_record(klass, custom_fields.keys)
+      data = format_records(klass, custom_fields.keys)
       custom_fields = format_custom_fields(custom_fields) if !custom_fields.empty?
       QueryBigly::Client.new(dataset).bulk_insert_model(klass, data, remote_table_name, custom_fields)
     end
 
-    def self.format_record(klass, custom_field_keys)
+    def self.format_records(klass, custom_field_keys)
       # allow user to pass in custom fields (unnest json/alias columns)
       custom_field_keys = klass.column_names if custom_field_keys.empty?
       query_fields = custom_field_keys.join(', ')
-      record = klass.select(query_fields).all.as_json
+      records = klass.select(query_fields).all.as_json
 
       # JSON data types not currently supported
-      record = stringify_json_attributes(record)
+      records = records.map { |record| stringify_json_attributes(record) }
     end
   end
 end
