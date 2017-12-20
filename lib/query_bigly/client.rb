@@ -74,7 +74,9 @@ module QueryBigly
       table.nil? ? create_table(table_name, klass, custom_fields) : table
     end
 
-    # Creates a BigQuery table
+    # Creates a BigQuery table for an ActiveRecord model -- or by custom fields
+    # Might be better refactored to not be called by a method commonly used in the 
+    # google-cloud-bigquery gem
     def create_table(table_name, klass=nil, custom_fields={})
       schema_array = create_schema_array(klass, custom_fields)
       table = @dataset.create_table "#{table_name}" do |table|
