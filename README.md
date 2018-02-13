@@ -40,7 +40,7 @@ QueryBigly::Client.new.run_query(statement)
 Run an Asynchronous Query
 ```
 statement = SELECT * FROM dogs;
-QueryBigly::Client.new.run_query(statement)
+QueryBigly::Client.new.run_async_query(statement)
 ```
 *PROTIP* - make sure to `squish` your statements to remove whitespace. 
 
