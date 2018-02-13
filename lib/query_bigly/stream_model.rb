@@ -36,7 +36,7 @@ module QueryBigly
     end
 
     def self.format_record(klass, pk, custom_field_keys)
-     # allow user to pass in custom fields (unnest json/alias columns)
+      # allow user to pass in custom fields (unnest json/alias columns)
       custom_field_keys = klass.column_names if custom_field_keys.empty?
       query_fields = custom_field_keys.join(', ')
 

@@ -14,7 +14,8 @@ RSpec.describe QueryBigly::Client do
     let(:new_client) { subject.new }
     let(:override_project_id) { 'override-project-id' }
     let(:override_keyfile) { 'new_keyfile' }
-    let(:new_client_with_overrides) { subject.new(override_project_id, override_keyfile) }
+    let(:override_dataset) { 'new_dataset' }
+    let(:new_client_with_overrides) { subject.new(override_dataset, override_project_id, override_keyfile) }
     
     it 'can initialize' do
       expect(new_client).to be_a_kind_of(QueryBigly::Client)

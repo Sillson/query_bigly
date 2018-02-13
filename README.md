@@ -29,6 +29,9 @@ Or install it yourself as:
 
 The `QueryBigly::Client` class is an abstracted way to consistently interface with the `Google::Cloud::Bigquery` class from the `google-cloud-bigquery` gem.
 
+- `QueryBigly::Client.new()` will instansiate a new client with your default attributes.
+- `QueryBigly::Client.new(override_dataset, override_project_id, override_keyfile)` will enable you to override the defaults set in environment variables
+
 #### Querying
 
 Run a Query
@@ -44,10 +47,14 @@ QueryBigly::Client.new.run_async_query(statement)
 ```
 *PROTIP* - make sure to `squish` your statements to remove whitespace. 
 
-#### Insertion
-**TODO**
+#### Bulk Insertion
 
-Until we can get `google-cloud-bigquery` to a minimum of `0.29.0`, the `insert_async` methods won't work.
+Currently this is a pretty ungraceful way to cram data into BigQuery. Be warned, this is a destructive action.
+
+`QueryBigly::Client.new.bulk_insert_model(klass, data_as_an_array_of_json, table_name=nil, custom_fields={})`
+
+This will dump the table of a given class into BigQuery. Be sure to properly set your `DEFAULT_DATASET` or override the default dataset upon creation of your `QueryBigly::Client.new(override_dataset)`
+
 
 #### Streaming
 Stream a Record
