@@ -18,6 +18,9 @@ Or install it yourself as:
 
     $ gem install query_bigly
 
+It's prudent to note that since the `QueryBigly` defaults are dependent upon environment variables, these will need to be available to the gem upon instantiation. For troubleshooting, please see the following regarding [Dotenv load order](https://github.com/bkeepers/dotenv#installation)
+
+
 ## Usage
 
 ### Do These Things First
