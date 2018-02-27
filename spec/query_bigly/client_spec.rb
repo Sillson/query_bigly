@@ -15,20 +15,18 @@ RSpec.describe QueryBigly::Client do
     let(:override_project_id) { 'override-project-id' }
     let(:override_keyfile) { 'new_keyfile' }
     let(:override_dataset) { 'new_dataset' }
-    let(:new_client_with_overrides) { subject.new(override_dataset, override_project_id, override_keyfile) }
+    let(:new_client_with_overrides) { subject.new(override_dataset, override_project_id) }
     
     it 'can initialize' do
       expect(new_client).to be_a_kind_of(QueryBigly::Client)
     end
 
     it 'will set the defaults project_id' do
-      expect(new_client.instance_variable_get(:@keyfile)).to eq('/path/to/key/json_key.json')
       expect(new_client.instance_variable_get(:@project_id)).to eq('test-google-project')
       expect(new_client.dataset).to eq(test_dataset)
     end
 
     it 'can override the defaults' do
-      expect(new_client_with_overrides.instance_variable_get(:@keyfile)).to eq(override_keyfile)
       expect(new_client_with_overrides.instance_variable_get(:@project_id)).to eq(override_project_id)
     end
   end

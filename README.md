@@ -23,14 +23,14 @@ Or install it yourself as:
 ### Do These Things First
 
 - Copy the environment variables out of `.env`, and include them in your application. Change all values as pertains to your project
-- **THIS IS IMPORTANT**: create a dataset in your BigQuery project, and set `DEFAULT_DATASET` to that value. Make sure it's unique to your project, and don't overwrite or corrupt other datasets
+- **THIS IS IMPORTANT**: create a dataset in your BigQuery project, and set `DEFAULT_DATASET` to that value. Make sure it's unique to your project, and don't overwrite or corrupt other datasets. Set your `BIGQUERY_KEYFILE_JSON` environment variable to the credentials gifted to you via devops, it should be surrounded in quotes as follows: '{type:"type", project_id: "project_id"}'.
 
 ### Basic BigQuery actions
 
 The `QueryBigly::Client` class is an abstracted way to consistently interface with the `Google::Cloud::Bigquery` class from the `google-cloud-bigquery` gem.
 
 - `QueryBigly::Client.new()` will instansiate a new client with your default attributes.
-- `QueryBigly::Client.new(override_dataset, override_project_id, override_keyfile)` will enable you to override the defaults set in environment variables
+- `QueryBigly::Client.new(override_dataset, override_project_id)` will enable you to override the defaults set in environment variables
 
 #### Querying
 

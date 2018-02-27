@@ -8,15 +8,10 @@ require "query_bigly/loader"
 
 module QueryBigly
   PROJECT_ID      = ENV.fetch('PROJECT_ID', 'Needs to be set').freeze
-  KEYFILE         = ENV.fetch("KEYFILE", 'Needs to be set').freeze
   DEFAULT_DATASET = ENV.fetch("DEFAULT_DATASET", 'Needs to be set').freeze
 
   def self.project_id
     @project_id = PROJECT_ID
-  end
-
-  def self.keyfile
-    @keyfile = KEYFILE
   end
 
   def self.default_dataset
