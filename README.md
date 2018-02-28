@@ -23,7 +23,7 @@ Or install it yourself as:
 ### Do These Things First
 
 - Copy the environment variables out of `.env`, and include them in your application. Change all values as pertains to your project
-- **THIS IS IMPORTANT**: create a dataset in your BigQuery project, and set `DEFAULT_DATASET` to that value. Make sure it's unique to your project, and don't overwrite or corrupt other datasets. Set your `BIGQUERY_KEYFILE_JSON` environment variable to the credentials gifted to you via devops, it should be surrounded in quotes as follows: '{type:"type", project_id: "project_id"}'.
+- **THIS IS IMPORTANT**: create a dataset in your BigQuery project, and set `DEFAULT_DATASET` to that value. Make sure it's unique to your project, and don't overwrite or corrupt other datasets. Set either your `BIGQUERY_KEYFILE_JSON` env variable it should be surrounded in quotes as follows: `BIGQUERY_KEYFILE_JSON='{type:"type", project_id: "project_id"}'` or `BIGQUERY_KEYFILE` environment variable to the path to the credentials gifted to you via devops: `BIGQUERY_KEYFILE=./keys/keyfile.json`.
 
 ### Basic BigQuery actions
 
@@ -45,7 +45,7 @@ Run an Asynchronous Query
 statement = SELECT * FROM dogs;
 QueryBigly::Client.new.run_async_query(statement)
 ```
-*PROTIP* - make sure to `squish` your statements to remove whitespace. 
+*PROTIP* - make sure to `squish` your statements to remove whitespace.
 
 #### Bulk Insertion
 
@@ -125,7 +125,7 @@ def custom_fields
   end
 ```
 **Partition By:**
-Since asynchronous inserts are not supported in this version, partitioning our tables by a datetime column is mandatory. The default is `created_at`, but you can overwrite that with any given datetime/timestamp/date column. 
+Since asynchronous inserts are not supported in this version, partitioning our tables by a datetime column is mandatory. The default is `created_at`, but you can overwrite that with any given datetime/timestamp/date column.
 
 ## Development
 
