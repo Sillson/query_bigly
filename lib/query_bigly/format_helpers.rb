@@ -50,7 +50,15 @@ module QueryBigly
 
     # Sidekiq turns the symbol values into strings, undo that
     def reformat_custom_field_types_to_sym(custom_fields)
-      custom_fields.transform_values { |column_type| column_type.to_sym }
+      result = {}
+        custom_fields.each_pair do |key, value|
+          result[key] = if value.class == Hash
+                          reformat_custom_field_types_to_sym(value)
+                        else
+                          value.to_sym
+                        end
+        end
+      result
     end
 
     # Rails datatypes != BigQuery datatypes
