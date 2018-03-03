@@ -3,15 +3,11 @@ module QueryBigly
     include QueryBigly::FormatHelpers
     attr_accessor :bigquery, :dataset
 
-    def initialize(dataset=nil, project_id=nil, keyfile=nil)
+    def initialize(dataset=nil, project_id=nil)
       @project_id = project_id || QueryBigly.project_id
-      @keyfile = keyfile || QueryBigly.keyfile
       dataset = dataset || QueryBigly.default_dataset
 
-      @bigquery = Google::Cloud::Bigquery.new(
-        project: @project_id,
-        keyfile: @keyfile
-        )
+      @bigquery = Google::Cloud::Bigquery.new(project: @project_id)
       @dataset = @bigquery.dataset dataset
     end
 

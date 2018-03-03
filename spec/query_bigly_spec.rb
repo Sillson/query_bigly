@@ -8,10 +8,6 @@ RSpec.describe QueryBigly do
       expect(QueryBigly.project_id).to eq('test-google-project')
     end
 
-    it "can access the keyfile path" do
-      expect(QueryBigly.keyfile).to eq('/path/to/key/json_key.json')
-    end
-
     it "can access the default_dataset" do
       expect(QueryBigly.default_dataset).to eq('test-database')
     end
