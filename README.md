@@ -1,6 +1,6 @@
 # QueryBigly
 
-A quick and dirty G5-Rails <> BigQuery integration. This gem is in beta -- and is also my first foray into gem building.
+A quick and dirty Rails <> BigQuery integration. This gem is in beta
 
 ## Installation
 
